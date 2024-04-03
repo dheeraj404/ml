@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Banana Classification</title>
+    <style>
+        /* CSS styles */
+        /* Style for the modal */
+        /* CSS styles */
+        #bananaForm {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: 50px;
+        }
+
+        .animated-button {
+            position: relative;
+            display: inline-block;
+            padding: 23px 24px;
+            border: none;
+            font-size: 16px;
+            background-color: inherit;
+            border-radius: 100px;
+            font-weight: 600;
+            color: #ffffff40;
+            box-shadow: 0 0 0 2px #ffffff20;
+            cursor: pointer;
+            overflow: hidden;
+            transition: all 0.6s cubic-bezier(0.23, 1, 0.320, 1);
+            margin-top: 20px;
+        }
+
+        .animated-button span:last-child {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 16px;
+            height: 16px;
+            background-color: #2196F3;
+            border-radius: 50%;
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.23, 1, 0.320, 1);
+        }
+
+        .animated-button span:first-child {
+            position: relative;
+            z-index: 1;
+        }
+
+        .animated-button:hover {
+            box-shadow: 0 0 0 5px #2195f360;
+            color: #ffffff;
+        }
+
+        .animated-button:active {
+            scale: 0.95;
+        }
+
+        .animated-button:hover span:last-child {
+            width: 200px;
+            height: 200px;
+            opacity: 1;
+        }
+
+
+
+        h1 {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 2.5rem;
+            color: #56bbff;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background-color: #212121;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
+        /* Style for modal content */
+        .modal-content {
+            margin: 5% auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            background-color: #fefefe;
+            position: relative;
+            border-radius: 8px;
+            text-align: center;
+            color: #0e89dcf2;
+            font-size: 1.4rem;
+            /* From https://css.glass */
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* Close button */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Fireworks animation */
+        @keyframes fireworks {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateY(-200px) rotate(360deg);
+                opacity: 1;
+            }
+        }
+
+        .firework {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ff9900;
+            border-radius: 50%;
+            animation: fireworks 1s ease-out forwards;
+        }
+
+        /* Heartbeat animation */
+        @keyframes heartbeat {
+            from {
+                transform: scale(1);
+            }
+
+            to {
+                transform: scale(1.2);
+            }
+        }
+
+        .wow-animation {
+            animation: heartbeat 0.5s infinite alternate;
+        }
+
+        .form__group {
+            position: relative;
+            padding: 20px 0 0;
+            width: 100%;
+            max-width: 410px;
+        }
+
+        .form__field {
+            font-family: inherit;
+            width: 100%;
+            border: none;
+            border-bottom: 2px solid #9b9b9b;
+            outline: 0;
+            font-size: 17px;
+            color: #fff;
+            padding: 7px 0;
+            background: transparent;
+            transition: border-color 0.2s;
+            margin-top: 5px;
+        }
+
+        .form__field::placeholder {
+            color: transparent;
+        }
+
+        .form__field:placeholder-shown~.form__label {
+            font-size: 17px;
+            cursor: text;
+            top: 20px;
+        }
+
+        .form__label {
+            position: absolute;
+            top: 0;
+            display: block;
+            transition: 0.2s;
+            font-size: 17px;
+            color: #9b9b9b;
+            pointer-events: none;
+        }
+
+        .form__field:focus {
+            padding-bottom: 6px;
+            font-weight: 700;
+            border-width: 3px;
+            border-image: linear-gradient(to right, #116399, #38caef);
+            border-image-slice: 1;
+        }
+
+        .form__field:focus~.form__label {
+            position: absolute;
+            top: 0;
+            display: block;
+            transition: 0.2s;
+            font-size: 17px;
+            color: #38caef;
+            font-weight: 700;
+        }
+
+        /* reset input */
+        .form__field:required,
+        .form__field:invalid {
+            box-shadow: none;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Banana Classification</h1>
+    <form id="bananaForm">
+        <div class="form__group field">
+            <input type="input" class="form__field" placeholder="Size" id="size" name="size" required>
+            <label for="size" class="form__label">Size</label>
+        </div>
+
+        <div class="form__group field">
+            <input type="input" class="form__field" placeholder="Weight" id="weight" name="weight" required>
+            <label for="weight" class="form__label">Weight</label>
+        </div>
+
+        <div class="form__group field">
+            <input type="input" class="form__field" placeholder="Sweetness" id="sweetness" name="sweetness" required>
+            <label for="sweetness" class="form__label">Sweetness</label>
+        </div>
+
+        <div class="form__group field">
+            <input type="input" class="form__field" placeholder="Softness" id="softness" name="softness" required>
+            <label for="softness" class="form__label">Softness</label>
+        </div>
+
+        <div class="form__group field">
+            <input type="input" class="form__field" placeholder="Harvest Time" id="harvestTime" name="harvestTime"
+                required>
+            <label for="harvestTime" class="form__label">Harvest Time</label>
+        </div>
+
+        <div class="form__group field">
+            <input type="input" class="form__field" placeholder="Ripeness" id="ripeness" name="ripeness" required>
+            <label for="ripeness" class="form__label">Ripeness</label>
+        </div>
+
+        <div class="form__group field">
+            <input type="input" class="form__field" placeholder="Acidity" id="acidity" name="acidity" required>
+            <label for="acidity" class="form__label">Acidity</label>
+        </div>
+        <button class="animated-button" type="submit">
+            <span>Classify Banana</span>
+            <span></span>
+        </button>
+
+        <!-- <button type="submit">Classify Banana</button> -->
+    </form>
+
+    <div id="result"></div>
+
+    <!-- Modal -->
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <p id="modalText" class="wow-animation"></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('bananaForm').addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const formData = {
+                size: document.getElementById('size').value,
+                weight: document.getElementById('weight').value,
+                sweetness: document.getElementById('sweetness').value,
+                softness: document.getElementById('softness').value,
+                harvest_time: document.getElementById('harvestTime').value,
+                ripeness: document.getElementById('ripeness').value,
+                acidity: document.getElementById('acidity').value
+            };
+
+            try {
+                const response = await fetch('/classify_banana', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+                document.getElementById('result').innerText = `Prediction: ${data.prediction}`;
+
+                // Display modal with animation based on prediction
+                const modal = document.getElementById('imageModal');
+                const modalText = document.getElementById('modalText');
+                if (data.prediction === 'Good') {
+                    modalText.innerText = 'Wow, this is a good banana!';
+                    modalText.classList.add('wow-animation');
+                    modal.style.display = 'block';
+                    setTimeout(closeModal, 10000); // Close modal after 3 seconds
+                } else {
+                    modalText.innerText = 'Ohh, sorry, this is a bad banana.';
+                    modalText.classList.add('wow-animation');
+                    modal.style.display = 'block';
+                    setTimeout(closeModal, 10000); // Close modal after 3 seconds
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('result').innerText = 'An error occurred. Please try again.';
+            }
+        });
+
+        // Close modal when close button or outside modal is clicked
+        function closeModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
+        window.onclick = function (event) {
+            const modal = document.getElementById('imageModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        };
+    </script>
+</body>
+
+</html>
